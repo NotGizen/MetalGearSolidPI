@@ -20,6 +20,19 @@ Actor::Actor(const std::string& path) : Entity(path), health(3), isAlive(true), 
 	posDir.right = false;
 }
 
+Actor::Actor() : health(3), isAlive(true), changedDirection(false), lastRotationDir(0.f), rotationLerpTimer(0.f),
+isImmortal(false)
+{
+	speed = 30.f;
+	//position = model->GetPosition();
+	ZAxis = glm::vec3(0.f, 0.f, 1.f);
+	XAxis = glm::vec3(1.f, 0.f, 0.f);
+	posDir.front = false;
+	posDir.back = false;
+	posDir.left = false;
+	posDir.right = false;
+}
+
 Actor::~Actor()
 {
 	//delete model;

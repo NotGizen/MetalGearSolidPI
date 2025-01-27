@@ -42,6 +42,7 @@ public:
 		IDLE
 	}dirPos;*/
 	Actor(const std::string& path);
+	Actor();
 	virtual ~Actor();
 	
 	 void Update();

@@ -14,7 +14,7 @@ public:
 		Attack,
 		Idle
 	}action;
-
+	Player();
 	Player(const std::string& path);
 	~Player();
 	void Init();

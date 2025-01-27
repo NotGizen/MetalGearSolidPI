@@ -2,7 +2,7 @@
 #include "Model.h"
 AnimationManager::AnimationManager()
 {
-	LoadAnimation("../Common/Assets/Standard_Walking/Standard_Walking", walkAnimation);
+	//LoadAnimation("../Common/Assets/Standard_Walking/Standard_Walking", walkAnimation);
 
 }
 

@@ -9,7 +9,7 @@ class Camera;
 class Model;
 class Shader;
 class Player;
-class AnimationManager;
+class Animation;
 class Gun;
 class Bullet;
 class Actor;
@@ -99,9 +99,8 @@ private:
 	std::vector<BulletStruct> bullets;
 	std::vector<EnemyStruct> enemies;
 	std::vector<Light*> lights;
-
-	//btRigidBody* playerBox = nullptr;
-	//btRigidBody* enemyBox = nullptr;
+	Animation* playerAnimator;
+	//std::vector<Entity*> playerAnimation;
 	std::vector<btRigidBody*> pathBoxes;
 	btRigidBody* pathBoxA = nullptr;
 	btRigidBody* pathBoxB = nullptr;
@@ -132,6 +131,7 @@ private:
 	btVector3 previousEnemyPos;
 	float playerGunTimer;
 	bool isFire;
+	int playerAnimFrame;
 	
 };
 

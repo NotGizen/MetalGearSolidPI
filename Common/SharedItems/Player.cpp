@@ -7,6 +7,13 @@
 #include "SceneRenderer.h"
 #include "Gun.h"
 
+Player::Player() : Actor(), bulletsMagazine(64), isShooting(false)
+{
+	health = 7;
+	isImmortal = false;
+	spawnPosition = glm::vec3(0.f, 0.f, -45.f);
+}
+
 Player::Player(const std::string& path) : Actor(path), bulletsMagazine(64), isShooting(false)
 {
 	health = 7;

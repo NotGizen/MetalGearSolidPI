@@ -10,17 +10,18 @@
 #include "Render.h"
 
 Scene::Scene() : nrLights(2), isCameraLerping(false), lerpTimer(0.f), rotationLerpTimer(0.f), nrPathPoints(4), canShoot(true), isChangingRoom(false), level(Level::LEVEL1), isLevel2Setup(false)
-,isExitDoorLoaded(false), didUserWin(false), changingRoomCounter(0), raycastTimer(0.f), playerGunTimer(0.f), isFire(false)
+,isExitDoorLoaded(false), didUserWin(false), changingRoomCounter(0), raycastTimer(0.f), playerGunTimer(0.f), isFire(false), playerAnimFrame(10)
 {
 	
 	//ENTITIES
-	player = new Player("../Common/Assets/Naked_Snake/Naked_Snake.obj");
-	
+	//player = new Player("../Common/Assets/Naked_Snake/Naked_Snake.obj");
+	player = new Player();
 	camera = new Camera(glm::vec3(0.f, 10.f, 5.f));
 	sceneRoot = new Entity();
 	playerCollider = new Entity();
 	room = new Entity("../Common/Assets/Level1/level1R.obj");
 	gun = new Gun("../Common/Assets/Items/Pistol/Pistol_02.obj");
+	playerAnimator = new Animation();
 	
 	
 	//physics
@@ -78,8 +79,12 @@ Scene::~Scene()
 		delete i;
 		i = nullptr;
 	}
-	//delete animator;
-	//animator = nullptr;
+	for (Entity* entity : playerAnimator->GetModelFrame())
+	{
+		delete entity;
+
+	}
+	delete playerAnimator;
 		
 
 }
@@ -509,7 +514,16 @@ void Scene::SetUpEntities()
 		playerCollider->AddChild(camera);
 		playerCollider->AddChild(player);
 		player->AddChild(gun);
-		
+
+		//Load animations in vectors-----------
+		playerAnimator->LoadAnimation("../Common/Assets/Standard_Walking/Standard_Walking");
+		for (Entity* entity : playerAnimator->GetModelFrame())
+		{
+			//entity->transform->position = glm::vec3(0.f, 10.f, 0.f);
+			entity->transform->scale = glm::vec3(100.f, 100.f, 100.f);
+		}
+		player->AddChild(playerAnimator->GetModelFrame()[playerAnimator->GetFrame()]);
+		//------------------------------------------
 		//Setup
 		
 		//camera->transform->position = camera->GetOffset();
@@ -574,9 +588,9 @@ void Scene::UpdateEntities(float dt, glm::vec3 colliderPosition)
 
 		}
 	}
-	
+	playerAnimator->Play(*player);
 	ActorDirectionLerping(dt, *player);
-
+	
 	sceneRoot->UpdateSelfAndChild();
 }
 
@@ -629,6 +643,7 @@ void Scene::UpdateBullet(float dt)
 
 void Scene::Draw(Shader& shader, Render& render, float dt)
 {
+	//playerAnimator->Play(*player);
 	sceneRoot->DrawSelfAndChildren(shader);
 	render.RenderTexture(door, *camera, render.GetTextureShader(), glm::vec3(3.f, 10.f, 133.f), 180.f, glm::vec3(0.f, 0.f, 1.f), glm::vec3(20.f, 30.f, 0.f));
 	render.RenderTexture(door, *camera, render.GetTextureShader(), glm::vec3(-17.f, 10.f, 133.f), 180.f, glm::vec3(0.f, 0.f, 1.f), glm::vec3(-20.f, 30.f, 0.f));
@@ -668,6 +683,17 @@ void Scene::Draw(Shader& shader, Render& render, float dt)
 
 		}
 	}
+	 
+	//Animation Draw
+	
+	//if (playerAnimFrame > 27)
+	//{
+	//	playerAnimFrame = 1;
+	//}
+	//
+	//playerAnimation[playerAnimFrame]->DrawSelfAndChildren(shader);
+	//std::cout << playerAnimation[playerAnimFrame]->transform->scale.x << std::endl;
+	////playerAnimFrame++;
 }
 
 void Scene::CameraLerping(float dt)
