@@ -8,6 +8,7 @@ public:
 		PATROLLING,
 		ALLERT
 	};
+	Enemy();
 	Enemy(const std::string& path);
 	void Init();
 	void StopMoving();

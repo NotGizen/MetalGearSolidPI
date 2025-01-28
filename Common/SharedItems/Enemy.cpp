@@ -1,5 +1,12 @@
 #include "Enemy.h"
 
+Enemy::Enemy() : Actor(), alarmState(PATROLLING), canSaveDir(false), isShooting(false)
+{
+	health = 1;
+	if (alarmState == PATROLLING)	speed = 20.f;
+	else speed = 40.f;
+}
+
 Enemy::Enemy(const std::string& path) : Actor(path), alarmState(PATROLLING) , canSaveDir(false), isShooting(false)
 {
 	health = 1;

@@ -13,9 +13,10 @@ class Animation
 {
 public:
 	Animation();
-
-	void LoadAnimation(const std::string& path);
-	void Play(Entity& parent);
+	~Animation();
+	void LoadAnimation(const std::string& path, unsigned int maxFrames);
+	void Play(Entity& parent, unsigned int maxFrames);
+	void Idle(Entity& parent);
 	//void LoadModelPosition(glm::vec3 position, std::vector<Model*>& vec);
 	std::vector<Entity*>& GetModelFrame();
 	unsigned int GetFrame() const; 

@@ -24,6 +24,7 @@ Scene::Scene() : nrLights(2), isCameraLerping(false), lerpTimer(0.f), rotationLe
 	playerAnimator = new Animation();
 	
 	
+	
 	//physics
 	physics = new Physics(room->GetModel());
 	
@@ -61,6 +62,8 @@ Scene::~Scene()
 	for (EnemyStruct& enemy : enemies)
 	{
 		delete enemy.entity;
+		
+		delete enemy.animator;
 	}
 	enemies.clear();
 	delete gun;
@@ -79,13 +82,9 @@ Scene::~Scene()
 		delete i;
 		i = nullptr;
 	}
-	for (Entity* entity : playerAnimator->GetModelFrame())
-	{
-		delete entity;
-
-	}
+	
 	delete playerAnimator;
-		
+	
 
 }
 
@@ -97,6 +96,7 @@ void Scene::Init(Render& render)
 	SetUpEntities();
 	CreateEnemy(btVector3(-3.f, 8.f, 90.f));
 	CreateEnemy(btVector3(-60.f, 8.f, 20.f));
+
 
 	//Enemy 1
 	CreatePathBox(btVector3(-1.f, 0.f, 20.f));
@@ -275,6 +275,7 @@ void Scene::UpdateScenePhysics(float dt)
 		if (changingLevelTimer >= 1.f)
 		{
 			CreateEnemy(btVector3(-10.f, 8.f, 90.f));
+			CreateEnemy(btVector3(-3.f, 8.f, 90.f));
 			changingLevelTimer = 0.f;
 			isChangingRoom = false;
 		}
@@ -476,7 +477,7 @@ void Scene::SetupLevel2()
 		DestroyEnemy();
 		enemies.clear();
 		
-		CreateEnemy(btVector3(-3.f, 8.f, 90.f));
+		//CreateEnemy(btVector3(-3.f, 8.f, 90.f));
 		
 		
 		isLevel2Setup = true;
@@ -516,12 +517,14 @@ void Scene::SetUpEntities()
 		player->AddChild(gun);
 
 		//Load animations in vectors-----------
-		playerAnimator->LoadAnimation("../Common/Assets/Standard_Walking/Standard_Walking");
+		playerAnimator->LoadAnimation("../Common/Assets/Standard_Walking/Standard_Walking", 29);
+		
 		for (Entity* entity : playerAnimator->GetModelFrame())
 		{
 			//entity->transform->position = glm::vec3(0.f, 10.f, 0.f);
 			entity->transform->scale = glm::vec3(100.f, 100.f, 100.f);
 		}
+		
 		player->AddChild(playerAnimator->GetModelFrame()[playerAnimator->GetFrame()]);
 		//------------------------------------------
 		//Setup
@@ -588,7 +591,19 @@ void Scene::UpdateEntities(float dt, glm::vec3 colliderPosition)
 
 		}
 	}
-	playerAnimator->Play(*player);
+	//ANIMATION PLAY
+	for (EnemyStruct& enemy : enemies)
+	{
+		enemy.animator->Play(*enemy.entity, 40);
+	}
+	if (!player->posDir.idle)
+	{	
+		playerAnimator->Play(*player, 27);
+	}
+	else
+	{
+		playerAnimator->Idle(*player);
+	}
 	ActorDirectionLerping(dt, *player);
 	
 	sceneRoot->UpdateSelfAndChild();
@@ -837,6 +852,8 @@ void Scene::DestroyEnemy()
 
 				physics->DeleteRigidBody(it->body); // Delete the rigid body
 				it->body = nullptr;
+				delete it->animator;
+				it->animator = nullptr;
 
 				// Erase the current element and update the iterator
 				it = enemies.erase(it);
@@ -870,17 +887,26 @@ void Scene::CreatePathBox(btVector3 position)
 
 void Scene::CreateEnemy(btVector3 position)
 {
-	Enemy* enemy = new Enemy("../Common/Assets/Actors/Enemy/sasman5.obj");
+	Enemy* enemy = new Enemy();
 	enemy->transform->scale = glm::vec3(5.f, 5.f, 5.f);
 	room->AddChild(enemy);
 	btRigidBody* enemyBox = physics->CreateBox(CollisionTypes::ENEMY, CollisionTypes::WALL , CollisionTypes::PLAYER, btVector3(3.f, 8.f, 3.f), position, 1.f);
 	InitPhysicsCollision(*enemyBox);
+
+	Animation* animator = new Animation();
+	animator->LoadAnimation("../Common/Assets/Animations/Enemy/Walking", 42);
+	enemy->AddChild(animator->GetModelFrame()[animator->GetFrame()]);
+	for (Entity* entity : animator->GetModelFrame())
+	{
+		entity->transform->scale = glm::vec3(1.f, 1.f, 1.f);
+	}
 
 	EnemyStruct enemyS;
 	enemyS.entity = enemy;
 	enemyS.body = enemyBox;
 	enemyS.isAlert = false;
 	enemyS.timer = 0.f;
+	enemyS.animator = animator;
 	enemies.push_back(enemyS);
 }
 

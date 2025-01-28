@@ -11,9 +11,17 @@ Animation::Animation()
 	frameOffset = 0;
 	frameLock = true;
 }
-void Animation::LoadAnimation(const std::string& pathInit)
+Animation::~Animation()
 {
-	for (int i = 1; i < 29; i++)
+	for (Entity* i : modelFrames)
+	{
+		if(i != nullptr) delete i;
+		
+	}
+}
+void Animation::LoadAnimation(const std::string& pathInit, unsigned int maxFrames)
+{
+	for (int i = 1; i < maxFrames; i++)
 	{
 		std::stringstream newPath;
 		newPath << pathInit;
@@ -25,7 +33,7 @@ void Animation::LoadAnimation(const std::string& pathInit)
 	}
 }
 
-void Animation::Play(Entity& parent)
+void Animation::Play(Entity& parent, unsigned int maxFrames)
 {
 	parent.RemoveUnusedChildren(modelFrames[frame]);
 	if (!frameLock)
@@ -37,7 +45,7 @@ void Animation::Play(Entity& parent)
 		frameLock = false;
 		frameOffset = 0;
 	++frame;
-	if (frame > 27)
+	if (frame > maxFrames)
 	{
 		frame = 0;
 	}
@@ -50,6 +58,15 @@ void Animation::Play(Entity& parent)
 		
 }
 
+void Animation::Idle(Entity& parent)
+{
+	parent.RemoveUnusedChildren(modelFrames[frame]);
+	frame = 0;
+	frameOffset = 0;
+	frameLock = true;
+	parent.AddChild(modelFrames[frame]);
+}
+
 std::vector<Entity*>& Animation::GetModelFrame()
 {
 	return modelFrames;
@@ -60,10 +77,4 @@ unsigned int Animation::GetFrame() const
 	return frame;
 }
 
-//void Animation::LoadModelPosition(glm::vec3 position, std::vector<Model*>& vec)
-//{
-//	for (Model* model : vec)
-//	{
-//		model->SetPosition(position);
-//	}
-//}
+

@@ -31,6 +31,7 @@ public:
 		float timer;
 		bool isAlert;
 		bool bulletHit;
+		Animation* animator;
 	};
 	struct BulletStruct
 	{
@@ -91,16 +92,14 @@ private:
 	Player* player = nullptr;
 	Entity* room = nullptr;
 	Camera* camera = nullptr;
-	//Enemy* enemy = nullptr;
 	Gun* gun = nullptr;
 	Entity* sceneRoot = nullptr;
 	Entity* playerCollider = nullptr;
-	//std::vector<Entity*> bullets;
 	std::vector<BulletStruct> bullets;
 	std::vector<EnemyStruct> enemies;
 	std::vector<Light*> lights;
 	Animation* playerAnimator;
-	//std::vector<Entity*> playerAnimation;
+	//Animation* enemyAnimator;
 	std::vector<btRigidBody*> pathBoxes;
 	btRigidBody* pathBoxA = nullptr;
 	btRigidBody* pathBoxB = nullptr;
@@ -125,7 +124,6 @@ private:
 	bool isExitDoorLoaded;
 	bool didUserWin;
 	int changingRoomCounter;
-	//bool bulletHit;
 	float raycastTimer;
 	btVector3 previousPlayerPos;
 	btVector3 previousEnemyPos;
