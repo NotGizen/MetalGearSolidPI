@@ -384,6 +384,7 @@ void Scene::UpdateScenePhysics(float dt)
 					
 					if (physics->PerformRaycast(oldEBody, oldPBody, btVector3(0.f, 1.f, 1.f), CollisionTypes::WALL))
 					{
+						enemy.entity->posDir.idle = false;
 						if (&enemy != nullptr)
 						{
 
@@ -405,6 +406,7 @@ void Scene::UpdateScenePhysics(float dt)
 						enemy.entity->transform->rotation.y = yRotation;
 						
 						enemy.entity->StopMoving();
+						enemy.entity->posDir.idle = true;
 						physics->MoveNone(*enemy.body);
 						if (enemy.timer > 1.f)
 						{
@@ -594,7 +596,15 @@ void Scene::UpdateEntities(float dt, glm::vec3 colliderPosition)
 	//ANIMATION PLAY
 	for (EnemyStruct& enemy : enemies)
 	{
+		if (!enemy.entity->posDir.idle)
+		{
 		enemy.animator->Play(*enemy.entity, 40);
+
+		}
+		else
+		{
+			enemy.animator->Idle(*enemy.entity);
+		}
 	}
 	if (!player->posDir.idle)
 	{	
@@ -699,16 +709,6 @@ void Scene::Draw(Shader& shader, Render& render, float dt)
 		}
 	}
 	 
-	//Animation Draw
-	
-	//if (playerAnimFrame > 27)
-	//{
-	//	playerAnimFrame = 1;
-	//}
-	//
-	//playerAnimation[playerAnimFrame]->DrawSelfAndChildren(shader);
-	//std::cout << playerAnimation[playerAnimFrame]->transform->scale.x << std::endl;
-	////playerAnimFrame++;
 }
 
 void Scene::CameraLerping(float dt)
